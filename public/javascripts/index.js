@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Start coding here!
     // Login with Google and redirect to /map
     // -----------------------------
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(()=> {
+    	window.location.href = window.location.href + 'map';
+    }).catch(() => {
+    	console.log('error');
+    });
+   
     
   });
 });

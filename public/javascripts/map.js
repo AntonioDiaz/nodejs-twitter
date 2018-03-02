@@ -59,8 +59,18 @@ function loadHashtag(hashtag) {
   // Connect to firebase, retrieve last 5 tweets and listen to new additions
   // Once tweet has been received, call 'renderTweet' and 'addMarker'
   // -----------------------------
-  
+  const ref = firebase
+    .database()
+    .ref('tweets/' + hashtag)
+    .limitToLast(5);
+  ref.on('child_added', (snapshot) => {
+    const value = snapshot.val();
+    renderTweet(value);
+    addMarker(map, value);
+  });
 }
+
+
 
 function logout() {
   // -----------------------------
@@ -68,26 +78,38 @@ function logout() {
   // Logout and redirect to /
   // -----------------------------
 
-}
 
 function initTweets() {
   const logout = document.querySelector('#logout');
   const input = document.querySelector('input');
 
   logout.addEventListener('click', () => {
-    logout();
+      firebase.auth().singOut().then(()=>
+    {
+      window.location.href = window.location.origin;
+    });
+}
   });
 
+  let timeout;
   input.addEventListener('keyup', (event) => {
-    // -----------------------------
-    // Start coding here!
-    // Load tweets on user input
-    // -----------------------------
-  });
+    clearTimeout(timeout);
+    
+    timeout=setTimeout(() => {
+
+      const value = event.target.value;
+        if(value) {
+          loadHashtag(value);
+          fetch(window.location.href + '?tag=' + value , {
+            method: 'put'
+          });
+        }
+      });
+    }, 1000);
 
   // -----------------------------
   // Start coding here!
   // Redirect to / if user is not logged in
   // -----------------------------
-  
+  //loadHashtag('photo');
 };
